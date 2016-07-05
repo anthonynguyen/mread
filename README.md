@@ -1,6 +1,10 @@
 # mrd
 
-Downloads manga from various sources
+Downloads manga from various sources.
+
+### Details
+
+Uses a plugin-based architecture for website backends.
 
 ### License
 
