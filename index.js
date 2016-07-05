@@ -4,6 +4,10 @@ var process = require('process');
 var express = require('express');
 var app = express();
 
+var api = require('./api.js');
+
+app.use('/api', api);
+
 var backends = [];
 fs.readdir('./backends', function (err, files) {
   if (err != null) {
@@ -26,6 +30,8 @@ fs.readdir('./backends', function (err, files) {
     console.log('No backends found, exiting');
     process.exit(0);
   }
+
+  app.locals.backends = backends;
 
   app.listen('3000', function () {
     console.log('mrd listening on port 3000');
