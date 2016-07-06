@@ -2,6 +2,7 @@ var fs = require('fs');
 
 var async = require('async');
 var express = require('express');
+var leven = require('leven');
 var app = express();
 
 var api = require('./api.js');
@@ -73,6 +74,17 @@ Backends.prototype.search = function (query, callback) {
 			if (err != null) {
 				return cb();
 			}
+
+			data.sort(function (a, b) {
+				var la = leven(a.title, query);
+				var lb = leven(b.title, query);
+
+				if (la < lb) return -1;
+				else if (la > lb) return 1;
+
+				return 0;
+			});
+
 			results[key] = data;
 			cb();
 		});
