@@ -4,12 +4,13 @@ var express = require('express');
 var app = express();
 
 var api = require('./api.js');
+var log = require('./lib/log.js');
 
 app.use('/api', api);
 
 fs.readdir('./backends', function (err, files) {
 	if (err != null) {
-		console.log('Error loading backends');
+		log.error('Could not load backends');
 		process.exit(1);
 	}
 
@@ -23,21 +24,21 @@ fs.readdir('./backends', function (err, files) {
 		var modulePath = './backends/' + file;
 		try {
 			backends.add(file, modulePath);
-			console.log(modulePath, 'loaded');
+			log.success(modulePath, 'loaded');
 		} catch (e) {
-			console.log(modulePath, 'not loaded:', e.message);
+			log.warn(modulePath, 'not loaded:', e.message);
 		}
 	});
 
 	if (backends.length() === 0) {
-		console.log('No backends found, exiting');
+		log.error('No backends found, exiting');
 		process.exit(0);
 	}
 
 	app.locals.backends = backends;
 
 	app.listen('5678', function () {
-		console.log('mrd listening on port 5678');
+		log.success('mrd listening on port 5678');
 	});
 });
 
@@ -61,5 +62,5 @@ Backends.prototype.search = function (query) {
 		results.push(back.search(query));
 	});
 
-	console.log(results);
+	log.warn(results);
 }
