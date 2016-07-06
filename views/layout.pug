@@ -1,0 +1,31 @@
+doctype html
+html
+	head
+		title mrd
+		link(href='https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.6/css/materialize.min.css', rel='stylesheet')
+		// link(href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.css', rel='stylesheet')
+		style.
+			.search-result img {
+				float: right;
+				max-height: 150px;
+			}
+
+			.tabs .indicator {
+				background-color: #0288d1;
+			}
+	body.grey.lighten-4
+		nav.light-blue.darken-2.row
+			.col.s6.offset-s3
+				a.brand-logo(href='/') mrd
+		.row
+			.col.s6.offset-s3
+				form(action='/search')
+					.input-field
+						if typeof(q) != 'undefined'
+							input#search(name='q', type='text', value=q, required)
+						else
+							input#search(name='q', type='text', required)
+						label(for='search') Search manga
+				block main
+		script(src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.0.0/jquery.min.js', type='text/javascript')
+		script(src='https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.6/js/materialize.min.js', type='text/javascript')

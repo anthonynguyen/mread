@@ -1,0 +1,33 @@
+extends ./layout.pug
+
+block main
+	if !success
+		h4= message
+	else
+		ul.tabs.light-blue-text.z-depth-1
+			each results, backend in data
+				li.tab
+					a.light-blue-text.text-darken-2(href='#' + backend)= backend
+		.section
+		each results, backend in data
+			div(id=backend)
+				each result in results
+					.card
+						.card-content
+							h5.title.light-blue-text
+								a(href='/get/' + result.id)= result.title
+							.divider
+							.bottom.section.row
+								if typeof result.image != 'undefined'
+									img.col.s2(src=result.image)
+
+								if typeof result.lastChapterDate != 'undefined'
+									.grey-text Last chapter #{result.lastChapterDate}
+								else
+									.grey-text No chapters
+
+								.grey-text #{result.views} views
+
+								div
+									each genre in result.genres
+										.chip= genre

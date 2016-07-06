@@ -4,6 +4,7 @@ var util = require('util');
 
 var fuzzy = require('../lib/fuzzy.js');
 var log = require('../lib/log.js');
+var reltime = require('../lib/reltime.js');
 
 const DEBUG = process.env.DEBUG == 1;
 const MAXIMUM_AGE = 3600000; // milliseconds
@@ -82,24 +83,28 @@ function search (query, callback) {
 		list.forEach(function (series) {
 			if (fuzzy(query, series.t)) {
 				var r = {
-					image: util.format(IMAGE_URL, series.im),
 					title: series.t,
 					id: series.i,
 					genres: series.c,
 					views: series.h,
 				};
 
+				if (series.im != null) {
+					r.image = util.format(IMAGE_URL, series.im);
+				}
+
 				if (series.s != null) {
 					r.status = STATUSES[series.s];
 				}
 
 				if (series.ld != null) {
-					r.lastChapterDate = new Date(series.ld * 1000).toISOString();
+					r.lastChapterDate = reltime(series.ld * 1000);
 				}
 
 				results.push(r);
 			}
 		});
+
 		if (typeof callback == "function") callback(null, results);
 	});
 }
@@ -132,7 +137,7 @@ function get (id, callback) {
 		}
 
 		if (info.last_chapter_date != null) {
-			r.lastChapterDate = new Date(info.last_chapter_date * 1000).toISOString();
+			r.lastChapterDate = reltime(info.last_chapter_date * 1000);
 		}
 
 		for (var i = 0; i < info.chapters.length; i++) {

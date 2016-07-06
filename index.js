@@ -8,7 +8,31 @@ var app = express();
 var api = require('./api.js');
 var log = require('./lib/log.js');
 
+app.set('view engine', 'pug');
 app.use('/api', api);
+
+app.get('/', function (req, res) {
+	res.render('index');
+});
+
+app.get('/search', function (req, res) {
+	var query = req.query.q;
+	log.warn('query in');
+	if (!(query != null)) {
+		res.render('search', {success: false, message: 'Please enter a query'});
+	} else if (query.length < 4) {
+		res.render('search', {success: false, message: 'That query is too short', q: query});
+	} else {
+		req.app.locals.backends.search(query, function (err, data) {
+			if (err != null) {
+				return res.sendStatus(500);
+			}
+
+			res.render('search', {success: true, data: data, q: query});
+			log.warn('served');
+		});
+	}
+});
 
 fs.readdir('./backends', function (err, files) {
 	if (err != null) {
