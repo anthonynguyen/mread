@@ -146,8 +146,37 @@ function get (id, callback) {
 	});
 }
 
+function chapter (id, callback) {
+	request.get(util.format(CHAPTER_URL, id), function (err, response, body) {
+		if (err != null) {
+			log.error(err);
+			if (typeof callback == "function") callback(err, null);
+		}
+
+		if (response.statusCode != 200) {
+			if (typeof callback == "function") callback(new Error('Chapter not found'), 404);
+			return;
+		}
+
+		var info = JSON.parse(body);
+		var imagesO = {};
+		for (var i = 0; i < info.images.length; i++) {
+			var im = info.images[i];
+			imagesO[im[0]] = util.format(IMAGE_URL, im[1]);
+		}
+
+		var images = [];
+		Object.keys(imagesO).sort().forEach(function (k) {
+			images.push(imagesO[k]);
+		});
+
+		if (typeof callback == "function") callback(null, images);
+	});
+}
+
 module.exports = {
 	name: 'Manga Eden',
 	search: search,
 	get: get,
+	chapter: chapter,
 }
