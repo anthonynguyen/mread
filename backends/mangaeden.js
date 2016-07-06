@@ -32,6 +32,7 @@ function refreshList (callback) {
 	if (now - latestRetrieval > MAXIMUM_AGE) {
 		log.warn('Mangaeden list too old, getting another');
 		if (DEBUG) {
+			log.warn('reading from file');
 			fs.readFile('./backends/mangaeden.json', function (err, data) {
 				handler(err, data);
 			});
@@ -41,6 +42,8 @@ function refreshList (callback) {
 			});
 		}
 		latestRetrieval = now;
+	} else {
+		if (typeof callback == "function") callback(null);
 	}
 }
 
@@ -175,7 +178,7 @@ function chapter (id, callback) {
 }
 
 module.exports = {
-	name: 'Manga Eden',
+	name: 'Manga_Eden',
 	search: search,
 	get: get,
 	chapter: chapter,
