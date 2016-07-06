@@ -64,19 +64,6 @@ Backends.prototype.get = function (name) {
 	}
 }
 
-/*
-Super set of format of results per array:
-not all results will have each of these items
-{
-	id: unique id,
-	title: Manga Title,
-	image: http://example.com/url/to/image,
-	status: completed/in progress,
-	genres: [action, adventure],
-	lastChapterDate: DATE,
-	views: 10000,
-}
-*/
 Backends.prototype.search = function (query, callback) {
 	var results = {};
 	var that = this;

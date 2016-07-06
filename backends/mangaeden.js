@@ -11,6 +11,7 @@ const MAXIMUM_AGE = 3600000; // milliseconds
 const LIST_URL = 'https://www.mangaeden.com/api/list/0/';
 const IMAGE_URL = 'https://cdn.mangaeden.com/mangasimg/%s';
 const INFO_URL = 'https://www.mangaeden.com/api/manga/%s/';
+const CHAPTER_URL = 'https://www.mangaeden.com/api/chapter/%s/';
 
 const STATUSES = ['Suspended', 'Ongoing', 'Completed'];
 
@@ -106,8 +107,42 @@ function get (id, callback) {
 			log.error(err);
 			if (typeof callback == "function") callback(err, null);
 		}
+
+		if (response.statusCode != 200) {
+			if (typeof callback == "function") callback(new Error('Manga not found'), 404);
+			return;
+		}
+
 		var info = JSON.parse(body);
-		if (typeof callback == "function") callback(null, info);
+		var r = {
+			title: info.title,
+			image: util.format(IMAGE_URL, info.image),
+			genres: info.categories,
+			views: info.hits,
+			description: info.description,
+			numChapters: info.chapters_len,
+			chapters: [],
+		}
+
+		if (info.status != null) {
+			r.status = STATUSES[info.status];
+		}
+
+		if (info.last_chapter_date != null) {
+			r.lastChapterDate = new Date(info.last_chapter_date * 1000).toISOString();
+		}
+
+		for (var i = 0; i < info.chapters.length; i++) {
+			var chapter = info.chapters[i];
+			r.chapters.push({
+				number: String(chapter[0]),
+				date: new Date(chapter[1] * 1000).toISOString(),
+				title: chapter[2],
+				id: chapter[3],
+			});
+		}
+
+		if (typeof callback == "function") callback(null, r);
 	});
 }
 

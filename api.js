@@ -5,6 +5,29 @@ router.all('/', function (req, res) {
 	res.send('api');
 });
 
+/*
+Superset of format of result:
+not all results will have each of these items
+{
+	title: Manga Title,
+	image: http://example.com/url/to/image,
+	status: completed/in progress,
+	genres: [action, adventure],
+	lastChapterDate: DATE,
+	views: 10000,
+	description: blah blah,
+	numChapters: 10,
+	released: 2016,
+	chapters: [
+		{
+			number: "123",
+			date: DATE,
+			title: "Chapter title",
+			id: asdjalsjl3983a
+		}
+	]
+}
+*/
 router.get('/:backend/get/:id', function (req, res) {
 	var requestedBackend = req.params.backend;
 	var id = req.params.id;
@@ -13,7 +36,8 @@ router.get('/:backend/get/:id', function (req, res) {
 	if (backend != null) {
 		backend.get(id, function (err, data) {
 			if (err != null) {
-				return res.sendStatus(500);
+				var code = Number(data);
+				return res.sendStatus(isNaN(code) ? 500 : code);
 			}
 
 			res.send(data);
@@ -23,6 +47,23 @@ router.get('/:backend/get/:id', function (req, res) {
 	}
 });
 
+/*
+Superset of format of results:
+not all results will have each of these items
+[
+	{
+		id: unique id,
+		title: Manga Title,
+		image: http://example.com/url/to/image,
+		status: completed/in progress,
+		genres: [action, adventure],
+		lastChapterDate: DATE,
+		views: 10000,
+	}
+	...
+	...
+]
+*/
 router.get('/search/:query', function (req, res) {
 	var query = req.params.query;
 	if (query.length < 5) {
