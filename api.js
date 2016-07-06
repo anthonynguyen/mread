@@ -10,7 +10,8 @@ router.get('/search/:query', function (req, res) {
   if (query.length < 5) {
     res.send('Search query is too short');
   } else {
-    res.send(query);
+    var results = req.app.locals.backends.search(query);
+    res.send(results);
   }
 });
 
