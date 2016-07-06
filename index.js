@@ -1,5 +1,6 @@
 var fs = require('fs');
 
+var async = require('async');
 var express = require('express');
 var app = express();
 
@@ -23,10 +24,11 @@ fs.readdir('./backends', function (err, files) {
 
 		var modulePath = './backends/' + file;
 		try {
-			backends.add(file, modulePath);
-			log.success(modulePath, 'loaded');
+			var module = require(modulePath);
+			backends.add(module.name, module);
+			log.success(module.name, 'backend loaded');
 		} catch (e) {
-			log.warn(modulePath, 'not loaded:', e.message);
+			log.warn(modulePath, 'backend not loaded:', e.message);
 		}
 	});
 
@@ -46,21 +48,53 @@ function Backends () {
 	this.backends = {};
 }
 
-Backends.prototype.add = function (name, modulePath) {
-	this.backends[name] = require(modulePath);
+Backends.prototype.add = function (name, module) {
+	this.backends[name] = module;
 }
 
 Backends.prototype.length = function () {
 	return Object.keys(this.backends).length;
 }
 
-Backends.prototype.search = function (query) {
-	var results = [];
-	var that = this;
-	Object.keys(this.backends).forEach(function (key) {
-		var back = that.backends[key];
-		results.push(back.search(query));
-	});
+Backends.prototype.get = function (name) {
+	try {
+		return this.backends[name];
+	} catch (e) {
+		return null;
+	}
+}
 
-	log.warn(results);
+/*
+Super set of format of results per array:
+not all results will have each of these items
+{
+	id: unique id,
+	title: Manga Title,
+	image: http://example.com/url/to/image,
+	status: completed/in progress,
+	genres: [action, adventure],
+	lastChapterDate: DATE,
+	views: 10000,
+}
+*/
+Backends.prototype.search = function (query, callback) {
+	var results = {};
+	var that = this;
+	async.each(Object.keys(this.backends), function(key, cb) {
+		var back = that.backends[key];
+		back.search(query, function (err, data) {
+			if (err != null) {
+				return cb();
+			}
+			results[key] = data;
+			cb();
+		});
+	}, function (err) {
+		if (err != null) {
+			if (typeof callback == "function") callback(err, null);
+			return;
+		}
+
+		if (typeof callback == "function") callback(null, results);
+	});
 }
