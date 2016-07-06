@@ -4,6 +4,8 @@ block main
 	if !success
 		h4= message
 	else
+		#gallery
+			img#current-slide
 		.card
 			.card-content
 				h3.title= data.title
@@ -25,7 +27,84 @@ block main
 		if data.chapters.length > 0
 			.collection.z-depth-1
 				each chapter in data.chapters
-					a.collection-item.light-blue-text(href='/chapter/' + backend + '/' + chapter.id)
+					a.collection-item.light-blue-text.chapter-link(href='/api/chapter/' + backend + '/' + chapter.id)
 						span.grey-text= chapter.number + ' - '
 						span= chapter.title
 						span.right.grey-text= chapter.date
+
+block script
+	script(src='https://cdnjs.cloudflare.com/ajax/libs/galleria/1.4.2/galleria.min.js', type='text/javascript')
+	script.
+		var slides = [];
+		var current = 0;
+
+		$(document).keydown(function(e) {
+			switch(e.which) {
+				case 27:
+					resetSlides();
+					break;
+
+				case 37: // left
+					previousSlide();
+					break;
+
+				case 39: // right
+					nextSlide();
+					break;
+
+				default: return;
+			}
+			e.preventDefault();
+		});
+
+		function resetSlides() {
+			$('#gallery').hide();
+			slides = [];
+			current = 0;
+		}
+
+		function setSlide() {
+			if (slides.length < 1) {
+				return;
+			}
+
+			if (current < 0 || current >= slides.length) {
+				return;
+			}
+
+			$('#gallery').show();
+			$('#current-slide').attr('src', slides[current]);
+		}
+
+		function nextSlide() {
+			current++;
+			if (current >= slides.length) {
+				current = 0;
+			}
+
+			setSlide();
+		}
+
+		function previousSlide() {
+			current--;
+			if (current < 0) {
+				current = slides.length - 1;
+			}
+
+			setSlide();
+		}
+
+		$('.chapter-link').click(function (e) {
+			e.preventDefault();
+			$.get($(this).attr('href'), function (data) {
+				slides = data;
+				current = 1;
+				previousSlide();
+			});
+		});
+
+		$('#gallery').click(function (e) {
+			slides = [];
+			current = 0;
+			$(this).hide();
+		});

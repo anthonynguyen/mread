@@ -88,7 +88,7 @@ Format of result:
 	...
 ]
 */
-router.get('/:backend/chapter/:id', function (req, res) {
+router.get('/chapter/:backend/:id', function (req, res) {
 	var requestedBackend = req.params.backend;
 	var id = req.params.id;
 
