@@ -1,0 +1,31 @@
+extends ./layout.pug
+
+block main
+	if !success
+		h4= message
+	else
+		.card
+			.card-content
+				h3.title= data.title
+				.divider
+				.row.section
+					if typeof data.image != 'undefined'
+						img.col.s5(src=data.image)
+					.grey-text Status: #{data.status}
+					if typeof data.lastChapterDate != 'undefined'
+						.grey-text Last chapter #{data.lastChapterDate}
+					else
+						.grey-text No chapters
+					.grey-text #{data.views} views
+
+					p.section !{data.description}
+				div
+					each genre in data.genres
+						.chip= genre
+		if data.chapters.length > 0
+			.collection.z-depth-1
+				each chapter in data.chapters
+					a.collection-item.light-blue-text(href='/chapter/' + backend + '/' + chapter.id)
+						span.grey-text= chapter.number + ' - '
+						span= chapter.title
+						span.right.grey-text= chapter.date

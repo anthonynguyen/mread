@@ -60,7 +60,7 @@ not all results will have each of these items
 	]
 }
 */
-router.get('/:backend/get/:id', function (req, res) {
+router.get('/manga/:backend/:id', function (req, res) {
 	var requestedBackend = req.params.backend;
 	var id = req.params.id;
 

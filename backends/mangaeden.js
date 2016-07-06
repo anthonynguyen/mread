@@ -2,6 +2,8 @@ var fs = require('fs');
 var request = require('request');
 var util = require('util');
 
+var moment = require('moment');
+
 var fuzzy = require('../lib/fuzzy.js');
 var log = require('../lib/log.js');
 var reltime = require('../lib/reltime.js');
@@ -144,7 +146,7 @@ function get (id, callback) {
 			var chapter = info.chapters[i];
 			r.chapters.push({
 				number: String(chapter[0]),
-				date: new Date(chapter[1] * 1000).toISOString(),
+				date: moment(chapter[1] * 1000).format('YYYY-MM-DD'),
 				title: chapter[2],
 				id: chapter[3],
 			});

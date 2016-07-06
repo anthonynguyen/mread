@@ -17,7 +17,7 @@ app.get('/', function (req, res) {
 
 app.get('/search', function (req, res) {
 	var query = req.query.q;
-	log.warn('query in');
+
 	if (!(query != null)) {
 		res.render('search', {success: false, message: 'Please enter a query'});
 	} else if (query.length < 4) {
@@ -25,12 +25,29 @@ app.get('/search', function (req, res) {
 	} else {
 		req.app.locals.backends.search(query, function (err, data) {
 			if (err != null) {
-				return res.sendStatus(500);
+				return res.render('search', {success: false, message: 'Search failed'});
 			}
 
 			res.render('search', {success: true, data: data, q: query});
-			log.warn('served');
 		});
+	}
+});
+
+app.get('/manga/:backend/:id', function (req, res) {
+	var requestedBackend = req.params.backend;
+	var requestedID = req.params.id;
+
+	var backend = req.app.locals.backends.get(requestedBackend);
+	if (backend != null) {
+		backend.get(requestedID, function (err, data) {
+			if (err != null) {
+				return res.render('manga', {success: false, message: 'Manga fetching failed'});
+			}
+
+			res.render('manga', {success: true, data: data, backend: requestedBackend});
+		});
+	} else {
+		res.render('manga', {success: false, message: 'That backend does not exist'});
 	}
 });
 
