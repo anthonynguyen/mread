@@ -1,6 +1,6 @@
 # mread
 
-Downloads manga from various sources.
+Web-based manga reader for various sources.
 
 ### How to run
 
@@ -18,13 +18,18 @@ node index.js
 
 `mread` should now be running at `http://localhost:5678`
 
-### Details
-
-Uses a plugin-based architecture for website backends. Currently there is only one backend: Mangaeden, but more will come.
-
-### TODO
-* [x] Improve gallery view (options for rtl/ltr, arrows, display which page we're on)
-* [ ] Add backends for more website (Mangafox, Batoto, etc.)
+### Ideas
+* **done** Improve gallery view (options for rtl/ltr, arrows, display which page we're on)
+* Add backends for more website (Mangafox, Batoto, etc.) - lower priority, Mangaeden is quite good
+* Add (client side) settings button for backend selection
+* Save read progress
+* Save view progress
+  * Show badge for new unseen chapters
+  * Could me merged with read progress - show badge for unread chapters
+* Add screenshots to README
+* Add stats to homepage (e.g. last update, next update, how many manga in mangaeden list)
+* Add favourite button to pin to index
+* go client/server???
 
 ### License
 
