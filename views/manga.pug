@@ -2,15 +2,15 @@ extends ./layout.pug
 
 block main
 	#gallery
-		nav.grey.darken-3
-			.container
-				#page-number.center.brand-logo
-				#controls.right
-					a.btn-floating.grey.darken-1(href='#')#left &#x2190;
-					span.space
-						input#rtl(type='checkbox')
-						label(for='rtl') Right to left
-					a.btn-floating.grey.darken-1(href='#')#right &#x2192;
+		nav.blue-grey.darken-4
+			#page-number.left.brand-logo.space
+			#controls.right
+				span.btn.light-blue.darken-3(onclick='left()') &#x2190;
+				span.space
+					input#rtl(type='checkbox')
+					label(for='rtl') Right to left
+				span.btn.light-blue.darken-3(onclick='right()') &#x2192;
+				span.btn.red.white-text.space(onclick='resetSlides()') Close
 		#images
 			img#current-slide
 	.card
@@ -41,141 +41,4 @@ block main
 
 block script
 	script(src='https://cdnjs.cloudflare.com/ajax/libs/galleria/1.4.2/galleria.min.js', type='text/javascript')
-	script.
-		var slides = [];
-		var current = 0;
-
-		var rightToLeft = true;
-
-		$(document).ready(function () {
-			var rtl = localStorage.getItem('rightToLeft');
-			if (rtl != null) {
-				if (rtl == 'false') {
-					rightToLeft = false;
-				} else {
-					rightToLeft = true;
-				}
-			} else {
-				localStorage.setItem('rightToLeft', rightToLeft);
-			}
-
-			$('#rtl').prop('checked', rightToLeft);
-		});
-
-		$('#rtl').change(function (e) {
-			rightToLeft = $(this).prop('checked');
-			localStorage.setItem('rightToLeft', rightToLeft);
-		});
-
-		$(document).keydown(function(e) {
-			switch(e.which) {
-				case 27:
-					resetSlides();
-					break;
-
-				case 37: // left
-					left();
-					break;
-
-				case 39: // right
-					right();
-					break;
-
-				default: return;
-			}
-			e.preventDefault();
-		});
-
-		$('#left').click(function (e) {
-			e.preventDefault();
-			e.stopPropagation();
-			left();
-		});
-
-		$('#right').click(function (e) {
-			e.preventDefault();
-			e.stopPropagation();
-			right();
-		});
-
-		function resetSlides() {
-			$('#gallery').hide();
-			slides = [];
-			current = 0;
-		}
-
-		function setSlide() {
-			if (slides < 1) {
-				return;
-			}
-
-			if (current < 0 || current >= slides) {
-				return;
-			}
-
-			var kids = $('#images').children();
-			kids.removeClass('current');
-
-			$(kids[current]).addClass('current');
-
-			$('#gallery').show();
-			$('#page-number').text((current + 1) + '/' + slides);
-		}
-
-		function nextSlide() {
-			current++;
-			if (current >= slides) {
-				current = slides - 1;
-			}
-
-			setSlide();
-		}
-
-		function previousSlide() {
-			current--;
-			if (current < 0) {
-				current = 0;
-			}
-
-			setSlide();
-		}
-
-		function left() {
-			if (rightToLeft) {
-				nextSlide();
-			} else {
-				previousSlide();
-			}
-		}
-
-		function right() {
-			if (rightToLeft) {
-				previousSlide();
-			} else {
-				nextSlide();
-			}
-		}
-
-		$('.chapter-link').click(function (e) {
-			e.preventDefault();
-			$.get($(this).attr('href'), function (data) {
-				var images = $('#images');
-				images.empty();
-				slides = data.length;
-				data.forEach(function (i) {
-					images.append('<img src="' + i + '" />');
-				});
-				current = 1;
-				previousSlide();
-			});
-		});
-
-		$('#gallery').click(function (e) {
-			slides = [];
-			current = 0;
-			$(this).hide();
-		});
-
-		$('#gallery nav').click(function (e) {
-			e.stopPropagation();
-		});
+	script(src='/manga.js', type='text/javascript')
