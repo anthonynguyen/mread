@@ -28,7 +28,7 @@ function refreshList (callback) {
 		if (err != null) {
 			if (typeof callback == "function") callback(err);
 		}
-		list = JSON.parse(data);
+		list = JSON.parse(data).manga;
 		if (typeof callback == "function") callback(null);
 	}
 
