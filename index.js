@@ -6,6 +6,7 @@ var leven = require('leven');
 var app = express();
 
 var api = require('./api.js');
+var config = require('./config.js');
 var log = require('./lib/log.js');
 
 app.set('view engine', 'pug');
@@ -95,8 +96,8 @@ fs.readdir('./backends', function (err, files) {
 
 	app.locals.backends = backends;
 
-	app.listen('5678', function () {
-		log.success('mrd listening on port 5678');
+	app.listen(config.port, function () {
+		log.success('mrd listening on port', config.port);
 	});
 });
 

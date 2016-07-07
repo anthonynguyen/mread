@@ -4,11 +4,11 @@ var util = require('util');
 
 var moment = require('moment');
 
+var config = require('../config.js');
 var fuzzy = require('../lib/fuzzy.js');
 var log = require('../lib/log.js');
 var reltime = require('../lib/reltime.js');
 
-const DEBUG = process.env.DEBUG == 1;
 const MAXIMUM_AGE = 3600000; // milliseconds
 
 const LIST_URL = 'https://www.mangaeden.com/api/list/0/';
@@ -34,7 +34,7 @@ function refreshList (callback) {
 
 	if (now - latestRetrieval > MAXIMUM_AGE) {
 		log.warn('Mangaeden list too old, getting another');
-		if (DEBUG) {
+		if (config.debug == 1) {
 			log.warn('reading from file');
 			fs.readFile('./backends/mangaeden.json', function (err, data) {
 				handler(err, data);
