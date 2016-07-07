@@ -2,6 +2,7 @@ doctype html
 html
 	head
 		title mread
+		link(href='/favicon.png', rel='icon', type='image/png')
 		link(href='https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.6/css/materialize.min.css', rel='stylesheet')
 		link(href='https://fonts.googleapis.com/icon?family=Material+Icons', rel='stylesheet')
 		link(href='/style.css', rel='stylesheet')
@@ -23,7 +24,7 @@ html
 				if !success
 					.card-panel.row
 						h5.valign-wrapper
-							i.medium.material-icons.blue-grey-text.text-lighten-3.valign.info-icon info
+							i.medium.material-icons.blue-grey-text.text-lighten-3.valign.info-icon warning
 							span.valign= message
 				else
 					block main
