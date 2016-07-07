@@ -97,7 +97,7 @@ fs.readdir('./backends', function (err, files) {
 	app.locals.backends = backends;
 
 	app.listen(config.port, function () {
-		log.success('mrd listening on port', config.port);
+		log.success('listening on port', config.port);
 	});
 });
 

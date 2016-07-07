@@ -1,4 +1,4 @@
-# mrd
+# mread
 
 Downloads manga from various sources.
 
@@ -16,7 +16,7 @@ and
 node index.js
 ```
 
-`mrd` should now be running at `http://localhost:5678`
+`mread` should now be running at `http://localhost:5678`
 
 ### Details
 
@@ -28,4 +28,4 @@ Uses a plugin-based architecture for website backends. Currently there is only o
 
 ### License
 
-`mrd` is licensed under the MIT License. See the `LICENSE` file for details
+`mread` is licensed under the MIT License. See the `LICENSE` file for details
