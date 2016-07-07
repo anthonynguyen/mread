@@ -13,7 +13,7 @@ app.use(express.static('static'));
 app.use('/api', api);
 
 app.get('/', function (req, res) {
-	res.render('index');
+	res.render('index', {sucess: false, message: 'Use the bar above to search'});
 });
 
 app.get('/search', function (req, res) {
@@ -29,10 +29,19 @@ app.get('/search', function (req, res) {
 				return res.render('search', {success: false, message: 'Search failed'});
 			}
 
-			if (Object.keys(data).length < 1) {
-				res.render('search', {success: false, message: 'No results', q: query});
+			var results = {};
+			var total = 0;
+			Object.keys(data).forEach(function (k) {
+				total += data[k].length;
+				if (data[k].length > 0) {
+					results[k] = data[k];
+				}
+			});
+
+			if (total < 1) {
+				res.render('search', {success: false, message: 'No search results found for ' + query, q: query});
 			} else {
-				res.render('search', {success: true, data: data, q: query});
+				res.render('search', {success: true, data: results, q: query});
 			}
 		});
 	}

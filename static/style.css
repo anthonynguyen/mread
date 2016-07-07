@@ -6,9 +6,8 @@ body {
 main {
 	flex: 1 0 auto;
 }
-.search-result img {
-	float: right;
-	max-height: 150px;
+.brand-logo {
+	font-weight: 200;
 }
 .tabs .indicator {
 	background-color: #0288d1;
@@ -31,4 +30,9 @@ main {
 }
 input[type=search] {
 	border-bottom: 0;
+	font-size: 1.2em;
+	font-weight: 200;
+}
+.info-icon {
+	margin-right: 0.3em;
 }

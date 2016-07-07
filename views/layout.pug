@@ -5,22 +5,29 @@ html
 		link(href='https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.6/css/materialize.min.css', rel='stylesheet')
 		link(href='https://fonts.googleapis.com/icon?family=Material+Icons', rel='stylesheet')
 		link(href='/style.css', rel='stylesheet')
-	body.grey.lighten-4
-		header
-			nav.blue.darken-4.row
-				.container.row
+	body
+		header.white
+			nav.light-blue.darken-4
+				.container
 					a.brand-logo(href='/') mrd
-		main
 			.container
-				form(action='/search').z-depth-1
+				form(action='/search')
 					.input-field
 						if typeof(q) != 'undefined'
-							input#search(name='q', type='search', value=q, required)
+							input#search.section(name='q', type='search', value=q, required)
 						else
-							input#search(name='q', type='search', required)
+							input#search.section(name='q', type='search', required)
 						label(for='search'): i.prefix.material-icons search
-				block main
-		footer.page-footers.blue.darken-4.white-text
+		main.section.grey.lighten-4.blue-grey-text.text-darken-1
+			.container
+				if !success
+					.card-panel.row
+						h5.valign-wrapper
+							i.medium.material-icons.blue-grey-text.text-lighten-3.valign.info-icon info
+							span.valign= message
+				else
+					block main
+		footer.page-footers.blue-grey.darken-2.white-text
 			.container.section
 				span mrd uses the 
 				a(href='http://mangaeden.com/') MangaEden 

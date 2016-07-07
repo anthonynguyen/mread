@@ -1,39 +1,34 @@
 extends ./layout.pug
 
 block main
-	if !success
-		.card
-			.card-content
-				h5= message
-	else
-		if Object.keys(data).length > 1
-			ul.tabs.light-blue-text.z-depth-1
-				each results, backend in data
-					li.tab
-						a.light-blue-text.text-darken-2(href='#' + backend)= backend
-		.section
-		each results, backend in data
-			div(id=backend)
-				each result in results
-					.card
-						.card-content
-							h5.title.light-blue-text
-								a(href='/manga/' + backend + '/' + result.id)= result.title
-							.divider
-							.section
-							.bottom.row
-								if typeof result.image != 'undefined'
-									img.col.s2(src=result.image)
+	if Object.keys(data).length > 1
+		ul.tabs.light-blue-text.z-depth-1
+			each results, backend in data
+				li.tab
+					a.light-blue-text.text-darken-2(href='#' + backend)= backend
+	.section
+	each results, backend in data
+		div(id=backend)
+			each result in results
+				.card
+					.card-content
+						h5.title.light-blue-text
+							a(href='/manga/' + backend + '/' + result.id)= result.title
+						.divider
+						.section
+						.bottom.row
+							if typeof result.image != 'undefined'
+								img.col.s2(src=result.image)
 
-								.grey-text Status: #{result.status}
+							.grey-text Status: #{result.status}
 
-								if typeof result.lastChapterDate != 'undefined'
-									.grey-text Last chapter #{result.lastChapterDate}
-								else
-									.grey-text No chapters
+							if typeof result.lastChapterDate != 'undefined'
+								.grey-text Last chapter #{result.lastChapterDate}
+							else
+								.grey-text No chapters
 
-								.grey-text #{result.views} views
+							.grey-text #{result.views} views
 
-							div
-								each genre in result.genres
-									.chip= genre
+						div
+							each genre in result.genres
+								.chip= genre
