@@ -29,7 +29,11 @@ app.get('/search', function (req, res) {
 				return res.render('search', {success: false, message: 'Search failed'});
 			}
 
-			res.render('search', {success: true, data: data, q: query});
+			if (Object.keys(data).length < 1) {
+				res.render('search', {success: false, message: 'No results', q: query});
+			} else {
+				res.render('search', {success: true, data: data, q: query});
+			}
 		});
 	}
 });

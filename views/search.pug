@@ -2,12 +2,15 @@ extends ./layout.pug
 
 block main
 	if !success
-		h4= message
+		.card
+			.card-content
+				h5= message
 	else
-		ul.tabs.light-blue-text.z-depth-1
-			each results, backend in data
-				li.tab
-					a.light-blue-text.text-darken-2(href='#' + backend)= backend
+		if Object.keys(data).length > 1
+			ul.tabs.light-blue-text.z-depth-1
+				each results, backend in data
+					li.tab
+						a.light-blue-text.text-darken-2(href='#' + backend)= backend
 		.section
 		each results, backend in data
 			div(id=backend)

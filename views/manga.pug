@@ -2,7 +2,9 @@ extends ./layout.pug
 
 block main
 	if !success
-		h4= message
+		.card
+			.card-content
+				h5= message
 	else
 		#gallery
 			img#current-slide

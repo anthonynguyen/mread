@@ -15,9 +15,9 @@ html
 					form(action='/search')
 						.input-field
 							if typeof(q) != 'undefined'
-								input#search(name='q', type='text', value=q, required)
+								input#search(name='q', type='text', placeholder='Search manga', value=q, required)
 							else
-								input#search(name='q', type='text', required)
+								input#search(name='q', type='text', placeholder='Search manga', required)
 							label(for='search') Search manga
 					block main
 		footer.page-footers.blue.darken-4.white-text
