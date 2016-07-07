@@ -2,6 +2,15 @@ extends ./layout.pug
 
 block main
 	#gallery
+		nav.grey.darken-3
+			.container
+				#page-number.center.brand-logo
+				#controls.right
+					a.btn-floating.grey.darken-1(href='#')#left &#x2190;
+					span.space
+						input#rtl(type='checkbox')
+						label(for='rtl') Right to left
+					a.btn-floating.grey.darken-1(href='#')#right &#x2192;
 		img#current-slide
 	.card
 		.card-content
@@ -35,6 +44,32 @@ block script
 		var slides = [];
 		var current = 0;
 
+		var rightToLeft = true;
+
+		$(document).ready(function () {
+			var rtl = localStorage.getItem('rightToLeft');
+			console.log(rtl);
+			console.log(typeof rtl);
+			if (rtl != null) {
+				if (rtl == 'false') {
+					rightToLeft = false;
+				} else {
+					rightToLeft = true;
+				}
+			} else {
+				localStorage.setItem('rightToLeft', rightToLeft);
+			}
+
+			$('#rtl').prop('checked', rightToLeft);
+		});
+
+		$('#rtl').change(function (e) {
+			rightToLeft = $(this).prop('checked');
+			console.log(localStorage.getItem('rightToLeft'));
+			localStorage.setItem('rightToLeft', rightToLeft);
+			console.log(localStorage.getItem('rightToLeft'));
+		});
+
 		$(document).keydown(function(e) {
 			switch(e.which) {
 				case 27:
@@ -42,16 +77,28 @@ block script
 					break;
 
 				case 37: // left
-					previousSlide();
+					left();
 					break;
 
 				case 39: // right
-					nextSlide();
+					right();
 					break;
 
 				default: return;
 			}
 			e.preventDefault();
+		});
+
+		$('#left').click(function (e) {
+			e.preventDefault();
+			e.stopPropagation();
+			left();
+		});
+
+		$('#right').click(function (e) {
+			e.preventDefault();
+			e.stopPropagation();
+			right();
 		});
 
 		function resetSlides() {
@@ -70,13 +117,14 @@ block script
 			}
 
 			$('#gallery').show();
+			$('#page-number').text((current + 1) + '/' + slides.length);
 			$('#current-slide').attr('src', slides[current]);
 		}
 
 		function nextSlide() {
 			current++;
 			if (current >= slides.length) {
-				current = 0;
+				current = slides.length - 1;
 			}
 
 			setSlide();
@@ -85,10 +133,26 @@ block script
 		function previousSlide() {
 			current--;
 			if (current < 0) {
-				current = slides.length - 1;
+				current = 0;
 			}
 
 			setSlide();
+		}
+
+		function left() {
+			if (rightToLeft) {
+				nextSlide();
+			} else {
+				previousSlide();
+			}
+		}
+
+		function right() {
+			if (rightToLeft) {
+				previousSlide();
+			} else {
+				nextSlide();
+			}
 		}
 
 		$('.chapter-link').click(function (e) {
@@ -104,4 +168,8 @@ block script
 			slides = [];
 			current = 0;
 			$(this).hide();
+		});
+
+		$('#gallery nav').click(function (e) {
+			e.stopPropagation();
 		});

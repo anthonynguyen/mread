@@ -23,8 +23,8 @@ node index.js
 Uses a plugin-based architecture for website backends. Currently there is only one backend: Mangaeden, but more will come.
 
 ### TODO
-* [ ] Improve gallery view (options for rtl/ltr, arrows, display which page we're on)
-* [ ] Add backends for more website (Mangafox, etc.)
+* [x] Improve gallery view (options for rtl/ltr, arrows, display which page we're on)
+* [ ] Add backends for more website (Mangafox, Batoto, etc.)
 
 ### License
 
