@@ -126,12 +126,15 @@ function get (id, callback) {
 		var info = JSON.parse(body);
 		var r = {
 			title: info.title,
-			image: util.format(IMAGE_URL, info.image),
 			genres: info.categories,
 			views: info.hits,
 			description: info.description,
 			numChapters: info.chapters_len,
 			chapters: [],
+		}
+
+		if (info.image != null) {
+			r.image = util.format(IMAGE_URL, info.image);
 		}
 
 		if (info.status != null) {
