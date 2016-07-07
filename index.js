@@ -9,6 +9,7 @@ var api = require('./api.js');
 var log = require('./lib/log.js');
 
 app.set('view engine', 'pug');
+app.use(express.static('static'));
 app.use('/api', api);
 
 app.get('/', function (req, res) {
