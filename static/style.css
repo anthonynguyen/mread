@@ -29,3 +29,6 @@ main {
 	max-width: 100%;
 	vertical-align: middle;
 }
+input[type=search] {
+	border-bottom: 0;
+}

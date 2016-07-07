@@ -3,23 +3,23 @@ html
 	head
 		title mrd
 		link(href='https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.6/css/materialize.min.css', rel='stylesheet')
+		link(href='https://fonts.googleapis.com/icon?family=Material+Icons', rel='stylesheet')
 		link(href='/style.css', rel='stylesheet')
 	body.grey.lighten-4
 		header
 			nav.blue.darken-4.row
-				.container
+				.container.row
 					a.brand-logo(href='/') mrd
 		main
-			.row
-				.container
-					form(action='/search')
-						.input-field
-							if typeof(q) != 'undefined'
-								input#search(name='q', type='text', placeholder='Search manga', value=q, required)
-							else
-								input#search(name='q', type='text', placeholder='Search manga', required)
-							label(for='search') Search manga
-					block main
+			.container
+				form(action='/search').z-depth-1
+					.input-field
+						if typeof(q) != 'undefined'
+							input#search(name='q', type='search', value=q, required)
+						else
+							input#search(name='q', type='search', required)
+						label(for='search'): i.prefix.material-icons search
+				block main
 		footer.page-footers.blue.darken-4.white-text
 			.container.section
 				span mrd uses the 
