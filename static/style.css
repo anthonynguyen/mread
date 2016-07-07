@@ -23,10 +23,14 @@ main {
 	width: 100%;
 	z-index: 9999;
 }
-#current-slide {
+#gallery img {
+	display: none;
 	max-height: 100%;
 	max-width: 100%;
-	vertical-align: middle;
+}
+#gallery img.current {
+	display: block;
+	margin: 0 auto;
 }
 input[type=search] {
 	border-bottom: 0;

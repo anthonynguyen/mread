@@ -11,7 +11,8 @@ block main
 						input#rtl(type='checkbox')
 						label(for='rtl') Right to left
 					a.btn-floating.grey.darken-1(href='#')#right &#x2192;
-		img#current-slide
+		#images
+			img#current-slide
 	.card
 		.card-content
 			h3.title= data.title
@@ -48,8 +49,6 @@ block script
 
 		$(document).ready(function () {
 			var rtl = localStorage.getItem('rightToLeft');
-			console.log(rtl);
-			console.log(typeof rtl);
 			if (rtl != null) {
 				if (rtl == 'false') {
 					rightToLeft = false;
@@ -65,9 +64,7 @@ block script
 
 		$('#rtl').change(function (e) {
 			rightToLeft = $(this).prop('checked');
-			console.log(localStorage.getItem('rightToLeft'));
 			localStorage.setItem('rightToLeft', rightToLeft);
-			console.log(localStorage.getItem('rightToLeft'));
 		});
 
 		$(document).keydown(function(e) {
@@ -108,23 +105,27 @@ block script
 		}
 
 		function setSlide() {
-			if (slides.length < 1) {
+			if (slides < 1) {
 				return;
 			}
 
-			if (current < 0 || current >= slides.length) {
+			if (current < 0 || current >= slides) {
 				return;
 			}
+
+			var kids = $('#images').children();
+			kids.removeClass('current');
+
+			$(kids[current]).addClass('current');
 
 			$('#gallery').show();
-			$('#page-number').text((current + 1) + '/' + slides.length);
-			$('#current-slide').attr('src', slides[current]);
+			$('#page-number').text((current + 1) + '/' + slides);
 		}
 
 		function nextSlide() {
 			current++;
-			if (current >= slides.length) {
-				current = slides.length - 1;
+			if (current >= slides) {
+				current = slides - 1;
 			}
 
 			setSlide();
@@ -158,7 +159,12 @@ block script
 		$('.chapter-link').click(function (e) {
 			e.preventDefault();
 			$.get($(this).attr('href'), function (data) {
-				slides = data;
+				var images = $('#images');
+				images.empty();
+				slides = data.length;
+				data.forEach(function (i) {
+					images.append('<img src="' + i + '" />');
+				});
 				current = 1;
 				previousSlide();
 			});
