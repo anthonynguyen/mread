@@ -12,7 +12,7 @@ var BACKENDS []Backend = []Backend{
 }
 
 func setupRoutes(e *echo.Echo) {
-	e.GET("/", root_main)
+	e.GET("/", route_main)
 
 	api := e.Group("/api")
 	api.GET("", api_main)

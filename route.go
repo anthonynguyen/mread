@@ -5,6 +5,6 @@ import (
 	"net/http"
 )
 
-func root_main(c echo.Context) error {
+func route_main(c echo.Context) error {
 	return c.String(http.StatusOK, "You've reached /")
 }
