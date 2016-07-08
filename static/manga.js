@@ -107,7 +107,7 @@ $('.chapter-link').click(function (e) {
 		images.empty();
 		slides = data.length;
 		data.forEach(function (i) {
-			images.append('<img src="' + i + '" />');
+			images.append('<div style="background-image: url(' + i + ')"></div>');
 		});
 		current = 1;
 		previousSlide();
