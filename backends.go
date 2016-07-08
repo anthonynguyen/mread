@@ -12,6 +12,7 @@ import (
 type Backend interface {
 	Name() string
 	Search(string) ([]SearchResult, error)
+	Manga(string) (MangaResult, error)
 }
 
 type SearchResult struct {
@@ -24,6 +25,25 @@ type SearchResult struct {
 	Views           int64
 }
 
+type ChapterInfo struct {
+	Number int64
+	Date int64
+	Title string
+	ID string
+}
+
+type MangaResult struct {
+	Title string
+	Image string
+	Status string
+	Genres []string
+	LastChapterDate int64
+	Views int64
+	Description string
+	NumChapters int64
+	Chapters []ChapterInfo
+}
+
 type MangaEden struct {
 	List            []*jason.Object
 	LatestRetrieval int64
@@ -33,10 +53,12 @@ var MANGA_EDEN = struct {
 	MAX_AGE   int64
 	LIST_URL  string
 	IMAGE_URL string
+	INFO_URL string
 }{
 	3600, // 1 hour, in seconds
 	"https://www.mangaeden.com/api/list/0/",
 	"https://cdn.mangaeden.com/mangasimg/%s",
+	"https://www.mangaeden.com/api/manga/%s/",
 }
 
 func (m *MangaEden) Name() string {
@@ -59,21 +81,21 @@ func (m *MangaEden) RefreshList() {
 				return
 			}
 		} else {
-			_, body, err := gorequest.New().Get(MANGA_EDEN.LIST_URL).End()
+			_, body, errs := gorequest.New().Get(MANGA_EDEN.LIST_URL).End()
 			log.Warn("MangaEden: Downloading list")
-			if err != nil {
+			if errs != nil {
 				log.Error(err)
 				return
 			}
 			data = []byte(body)
 		}
 
-		v, err := jason.NewObjectFromBytes(data)
+		j, err := jason.NewObjectFromBytes(data)
 		if err != nil {
 			return
 		}
 
-		list, err := v.GetObjectArray("manga")
+		list, err := j.GetObjectArray("manga")
 		if err != nil {
 			return
 		}
@@ -154,4 +176,99 @@ func (m *MangaEden) Search(query string) ([]SearchResult, error) {
 	}
 
 	return results, nil
+}
+
+func (m *MangaEden) Manga(id string) (MangaResult, error) {
+	var result MangaResult
+	url := fmt.Sprintf(MANGA_EDEN.INFO_URL, id)
+
+	_, body, errs := gorequest.New().Get(url).End()
+	if errs != nil {
+		return result, errs[0]
+	}
+
+	data := []byte(body)
+
+	manga, err := jason.NewObjectFromBytes(data)
+	if err != nil {
+		return result, err
+	}
+
+	stringData, err := manga.GetString("title")
+	if err == nil {
+		result.Title = stringData
+	}
+
+	stringData, err = manga.GetString("image")
+	if err == nil {
+		result.Image = fmt.Sprintf(MANGA_EDEN.IMAGE_URL, stringData)
+	}
+
+	intData, err := manga.GetInt64("status")
+	if err == nil {
+		result.Status = m.MapStatus(intData)
+	}
+
+	stringArrayData, err := manga.GetStringArray("categories")
+	if err == nil {
+		result.Genres = stringArrayData
+	}
+
+	floatData, err := manga.GetFloat64("last_chapter_date")
+	if err == nil {
+		result.LastChapterDate = int64(floatData)
+	}
+
+	intData, err = manga.GetInt64("hits")
+	if err == nil {
+		result.Views = intData
+	}
+
+	stringData, err = manga.GetString("description")
+	if err == nil {
+		result.Description = stringData
+	}
+
+	intData, err = manga.GetInt64("chapters_len")
+	if err == nil {
+		result.NumChapters = intData
+	}
+
+	valueArrayData, err := manga.GetValueArray("chapters")
+	if err == nil {
+		log.Warn(len(valueArrayData))
+		for _, chapterJSON := range(valueArrayData) {
+			var chapter ChapterInfo
+			arr, err := chapterJSON.Array()
+			if err != nil || len(arr) != 4 {
+				continue
+			}
+
+			intData, err := arr[0].Int64()
+			if err == nil {
+				chapter.Number = intData
+			}
+
+			floatData, err := arr[1].Float64()
+			if err == nil {
+				chapter.Date = int64(floatData)
+			}
+
+			stringData, err := arr[2].String()
+			if err == nil {
+				chapter.Title = stringData
+			}
+
+			stringData, err = arr[3].String()
+			if err != nil {
+				// Only the ID is strictly needed
+				continue
+			}
+			chapter.ID = stringData
+
+			result.Chapters = append(result.Chapters, chapter)
+		}
+	}
+
+	return result, nil
 }

@@ -13,6 +13,7 @@ var query string
 func setupRoutes(e *echo.Echo) {
 	e.GET("/", route_main)
 	e.GET("/search/:query", route_search)
+	e.GET("/manga/:backend/:id", route_manga)
 }
 
 func route_main(c echo.Context) error {
@@ -54,4 +55,22 @@ func route_search(c echo.Context) error {
 	}
 
 	return c.JSON(http.StatusOK, allResults)
+}
+
+func route_manga(c echo.Context) error {
+	requestedBackend := c.Param("backend")
+	requestedID := c.Param("id")
+
+	for _, backend := range BACKENDS {
+		if requestedBackend == backend.Name() {
+			result, err := backend.Manga(requestedID)
+			if err != nil {
+				return c.String(http.StatusInternalServerError, "")
+			}
+
+			return c.JSON(http.StatusOK, result)
+		}
+	}
+
+	return c.String(http.StatusNotFound, "Invalid backend")
 }
