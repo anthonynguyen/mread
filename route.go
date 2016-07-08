@@ -27,5 +27,5 @@ func route_search(c echo.Context) error {
 		allResults[b.Name()] = results
 	}
 
-	return c.String(http.StatusOK, "/search")
+	return c.JSON(http.StatusOK, allResults)
 }

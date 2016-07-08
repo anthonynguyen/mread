@@ -3,7 +3,7 @@ package main
 import (
 	"errors"
 	"fmt"
-	"github.com/jmoiron/jsonq"
+	"github.com/antonholmquist/jason"
 	"io/ioutil"
 	"time"
 )
@@ -19,12 +19,12 @@ type SearchResult struct {
 	Image           string
 	Status          string
 	Genres          []string
-	LastChapterDate int
-	Views           int
+	LastChapterDate int64
+	Views           int64
 }
 
 type MangaEden struct {
-	List            []interface{}
+	List            []*jason.Object
 	LatestRetrieval int64
 }
 
@@ -43,7 +43,8 @@ func (m *MangaEden) Name() string {
 }
 
 func (m *MangaEden) RefreshList() {
-	var stringData string
+	var data []byte
+	var err error
 
 	now := time.Now().Unix()
 	if now-m.LatestRetrieval > MANGA_EDEN.MAX_AGE {
@@ -51,22 +52,25 @@ func (m *MangaEden) RefreshList() {
 		if CONFIG.DEBUG {
 			log.Warn("Reading from file")
 
-			data, err := ioutil.ReadFile("./mangaeden.json")
+			data, err = ioutil.ReadFile("./mangaeden.json")
 			if err != nil {
 				log.Error(err)
 				return
 			}
-
-			stringData = string(data)
 		} else {
 			log.Warn("Download a list")
 		}
 
-		jq := getJQ(stringData)
-		list, err := jq.Array("manga")
+		v, err := jason.NewObjectFromBytes(data)
 		if err != nil {
 			return
 		}
+
+		list, err := v.GetObjectArray("manga")
+		if err != nil {
+			return
+		}
+
 		m.List = list
 
 		log.Success("Set latest to now")
@@ -74,7 +78,7 @@ func (m *MangaEden) RefreshList() {
 	}
 }
 
-func (m *MangaEden) MapStatus(status int) string {
+func (m *MangaEden) MapStatus(status int64) string {
 	switch status {
 	case 0:
 		return "Suspended"
@@ -95,11 +99,10 @@ func (m *MangaEden) Search(query string) ([]SearchResult, error) {
 		return nil, errors.New("No list to search")
 	}
 
-	for _, jsonManga := range m.List {
+	for _, manga := range m.List {
 		var r SearchResult
-		manga := jsonq.NewQuery(jsonManga)
 
-		stringData, err := manga.String("t")
+		stringData, err := manga.GetString("t")
 		if err != nil {
 			continue
 		}
@@ -110,27 +113,27 @@ func (m *MangaEden) Search(query string) ([]SearchResult, error) {
 
 		r.Title = stringData
 
-		stringData, err = manga.String("i")
+		stringData, err = manga.GetString("i")
 		if err == nil {
 			r.ID = stringData
 		}
 
-		stringData, err = manga.String("im")
+		stringData, err = manga.GetString("im")
 		if err == nil {
 			r.Image = fmt.Sprintf(MANGA_EDEN.IMAGE_URL, stringData)
 		}
 
-		intData, err := manga.Int("s")
+		intData, err := manga.GetInt64("s")
 		if err == nil {
 			r.Status = m.MapStatus(intData)
 		}
 
-		floatData, err := manga.Float("ld")
+		floatData, err := manga.GetFloat64("ld")
 		if err == nil {
-			r.LastChapterDate = int(floatData)
+			r.LastChapterDate = int64(floatData)
 		}
 
-		intData, err = manga.Int("h")
+		intData, err = manga.GetInt64("h")
 		if err == nil {
 			r.Views = intData
 		}

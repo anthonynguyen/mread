@@ -1,10 +1,8 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
 	"github.com/fatih/color"
-	"github.com/jmoiron/jsonq"
 	"strings"
 	"unicode"
 )
@@ -29,17 +27,6 @@ func (l Logger) Warn(parts ...interface{}) {
 
 func (l Logger) Success(parts ...interface{}) {
 	fmt.Println(append([]interface{}{successChar}, parts...)...)
-}
-
-// -----------------------------------------------------------------------------
-
-func getJQ(raw string) *jsonq.JsonQuery {
-	data := map[string]interface{}{}
-	dec := json.NewDecoder(strings.NewReader(raw))
-	dec.Decode(&data)
-	jq := jsonq.NewQuery(data)
-
-	return jq
 }
 
 // -----------------------------------------------------------------------------
