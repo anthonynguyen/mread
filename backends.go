@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/antonholmquist/jason"
+	"github.com/parnurzeal/gorequest"
 	"io/ioutil"
 	"time"
 )
@@ -50,7 +51,7 @@ func (m *MangaEden) RefreshList() {
 	if now-m.LatestRetrieval > MANGA_EDEN.MAX_AGE {
 		log.Warn("MangaEden list too old, getting another")
 		if CONFIG.DEBUG {
-			log.Warn("Reading from file")
+			log.Warn("MangaEden: Reading list from file")
 
 			data, err = ioutil.ReadFile("./mangaeden.json")
 			if err != nil {
@@ -58,7 +59,13 @@ func (m *MangaEden) RefreshList() {
 				return
 			}
 		} else {
-			log.Warn("Download a list")
+			_, body, err := gorequest.New().Get(MANGA_EDEN.LIST_URL).End()
+			log.Warn("MangaEden: Downloading list")
+			if err != nil {
+				log.Error(err)
+				return
+			}
+			data = []byte(body)
 		}
 
 		v, err := jason.NewObjectFromBytes(data)
