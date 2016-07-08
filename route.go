@@ -2,8 +2,13 @@ package main
 
 import (
 	"github.com/labstack/echo"
+	"github.com/texttheater/golang-levenshtein/levenshtein"
 	"net/http"
+	"sort"
 )
+
+// So that we can sort
+var query string
 
 func setupRoutes(e *echo.Echo) {
 	e.GET("/", route_main)
@@ -14,9 +19,23 @@ func route_main(c echo.Context) error {
 	return c.String(http.StatusOK, "You've reached /")
 }
 
+type ByLevenshteinDistance []SearchResult
+
+func (r ByLevenshteinDistance) Len() int {
+	return len(r)
+}
+
+func (r ByLevenshteinDistance) Swap(i int, j int) {
+	r[i], r[j] = r[j], r[i]
+}
+
+func (r ByLevenshteinDistance) Less(i int, j int) bool {
+	return levenshtein.DistanceForStrings([]rune(query), []rune(r[i].Title), levenshtein.DefaultOptions) < levenshtein.DistanceForStrings([]rune(query), []rune(r[j].Title), levenshtein.DefaultOptions)
+}
+
 func route_search(c echo.Context) error {
 	allResults := make(map[string][]SearchResult)
-	query := c.Param("query")
+	query = c.Param("query")
 
 	if len(query) < 5 {
 		return c.String(http.StatusBadRequest, "Search query is too short")
@@ -28,6 +47,9 @@ func route_search(c echo.Context) error {
 			log.Error(err)
 			continue
 		}
+
+		sort.Sort(ByLevenshteinDistance(results))
+
 		allResults[b.Name()] = results
 	}
 
