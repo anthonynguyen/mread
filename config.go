@@ -17,7 +17,7 @@ var CONFIG Config = Config{
 func loadConfig() {
 	debugEnv := os.Getenv("DEBUG")
 	if debugEnv == "1" {
-		CONFIG.DEBUG = false
+		CONFIG.DEBUG = true
 	}
 
 	portEnv := os.Getenv("PORT")
