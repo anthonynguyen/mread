@@ -18,6 +18,10 @@ func route_search(c echo.Context) error {
 	allResults := make(map[string][]SearchResult)
 	query := c.Param("query")
 
+	if len(query) < 5 {
+		return c.String(http.StatusBadRequest, "Search query is too short")
+	}
+
 	for _, b := range BACKENDS {
 		results, err := b.Search(query)
 		if err != nil {

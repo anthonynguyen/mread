@@ -138,6 +138,11 @@ func (m *MangaEden) Search(query string) ([]SearchResult, error) {
 			r.Views = intData
 		}
 
+		stringArrayData, err := manga.GetStringArray("c")
+		if err == nil {
+			r.Genres = stringArrayData
+		}
+
 		results = append(results, r)
 	}
 
