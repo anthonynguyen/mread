@@ -14,13 +14,13 @@ type Backend interface {
 }
 
 type SearchResult struct {
-	id              string
-	title           string
-	image           string
-	status          string
-	genres          []string
-	lastChapterDate int
-	views           int
+	ID              string
+	Title           string
+	Image           string
+	Status          string
+	Genres          []string
+	LastChapterDate int
+	Views           int
 }
 
 type MangaEden struct {
@@ -108,31 +108,31 @@ func (m *MangaEden) Search(query string) ([]SearchResult, error) {
 			continue
 		}
 
-		r.title = stringData
+		r.Title = stringData
 
 		stringData, err = manga.String("i")
 		if err == nil {
-			r.id = stringData
+			r.ID = stringData
 		}
 
 		stringData, err = manga.String("im")
 		if err == nil {
-			r.image = fmt.Sprintf(MANGA_EDEN.IMAGE_URL, stringData)
+			r.Image = fmt.Sprintf(MANGA_EDEN.IMAGE_URL, stringData)
 		}
 
 		intData, err := manga.Int("s")
 		if err == nil {
-			r.status = m.MapStatus(intData)
+			r.Status = m.MapStatus(intData)
 		}
 
 		floatData, err := manga.Float("ld")
 		if err == nil {
-			r.lastChapterDate = int(floatData)
+			r.LastChapterDate = int(floatData)
 		}
 
 		intData, err = manga.Int("h")
 		if err == nil {
-			r.views = intData
+			r.Views = intData
 		}
 
 		results = append(results, r)
