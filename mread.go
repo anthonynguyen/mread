@@ -39,7 +39,7 @@ func main() {
 		name string
 		path string
 	}{
-		{"index", "./views/index.amber"},
+		{"index", "./views/main.amber"},
 		{"search", "./views/search.amber"},
 		{"manga", "./views/manga.amber"},
 	}
