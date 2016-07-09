@@ -1,0 +1,41 @@
+doctype 5
+html
+	head
+		title mread
+		link[href="/static/favicon.png"][rel="icon"][type="image/png"]
+		link[href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.6/css/materialize.min.css"][rel="stylesheet"]
+		link[href="https://fonts.googleapis.com/icon?family=Material+Icons"][rel="stylesheet"]
+		link[href="/static/style.css"][rel="stylesheet"]
+	body
+		header.white
+			nav.light-blue.darken-4
+				div.container
+					a.brand-logo[href="/"] mread
+			div.container
+				form#search[action="/search"]
+					div.input-field
+						if Query != ""
+							input#search.section[name="q"][type="search"][value=Query][required]
+						else
+							input#search.section[name="q"][type="search"][required]
+						label[for="search"]
+							i.prefix.material-icons search
+		main.section.grey.lighten-4.blue-grey-text.text-darken-1
+			div.container
+				if Failed
+					div.card-panel.row
+						h5.valign-wrapper
+							i.medium.material-icons.blue-grey-text.text-lighten-3.valign.info-icon warning
+							span.valign #{Message}
+				else
+					block content
+
+					
+		footer.page-footers.blue-grey.darken-2.white-text
+			div.container.section
+				span mread uses the 
+				a[href="http://mangaeden.com/"] MangaEden 
+				span API
+		script[src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.0.0/jquery.min.js"][type="text/javascript"]
+		script[src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.6/js/materialize.min.js"][type="text/javascript"]
+		block script

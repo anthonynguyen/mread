@@ -1,0 +1,51 @@
+body {
+	display: flex;
+	min-height: 100vh;
+	flex-direction: column;
+}
+main {
+	flex: 1 0 auto;
+}
+.brand-logo {
+	font-weight: 200;
+}
+.tabs .indicator {
+	background-color: #0288d1;
+}
+#gallery {
+	background: rgba(0, 0, 0, 0.6);
+	display: none;
+	height: 100%;
+	left: 0;
+	position: fixed;
+	text-align: center;
+	top: 0;
+	width: 100%;
+	z-index: 9999;
+}
+#images {
+	height: 100%;
+	width: 100%;
+}
+#gallery #images div {
+	background-position: center center;
+	background-repeat: no-repeat;
+	background-size: contain;
+	display: none;
+	width: 100%;
+	height: 100%;
+}
+#gallery #images div.current {
+	display: block;
+}
+input[type=search] {
+	border-bottom: 0;
+	font-size: 1.2em;
+	font-weight: 200;
+}
+.info-icon {
+	margin-right: 0.3em;
+}
+.space {
+	margin: 0 1em;
+}

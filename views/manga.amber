@@ -1,0 +1,43 @@
+extends main
+
+block content
+	$backend = Backend
+	div#gallery
+		nav.blue-grey.darken-4
+			div#page-number.left.brand-logo.space
+			div#controls.right
+				span.btn.light-blue.darken-3[onclick="left()"] &#x2190;
+				span.space
+					input#rtl[type="checkbox"]
+					label[for="rtl"] Right to left
+				span.btn.light-blue.darken-3[onclick="right()"] &#x2192;
+				span.btn.red.white-text.space[onclick="resetSlides()"] Close
+		div#images
+	div.card
+		div.card-content
+			h3.title #{Data.Title}
+			div.divider
+			div.row.section
+				if Data.Image != ""
+					img.col.s5[src=Data.Image]
+				div.grey-text Status: #{Data.Status}
+				if Data.LastChapterDate != 0
+					div.grey-text Last chapter #{Data.LastChapterDate}
+				else
+					div.grey-text No chapters
+				div.grey-text #{Data.Views} views
+
+				p.section #{Data.Description}
+			div
+				each $genre in Data.Genres
+					div.chip #{$genre}
+	if len(Data.Chapters) > 0
+		div.collection.z-depth-1
+			each $chapter in Data.Chapters
+				a.collection-item.light-blue-text.chapter-link[href="/chapter/" + $backend + "/" + $chapter.ID]
+					span.grey-text #{$chapter.Number + " - "}
+					span #{$chapter.Title}
+					span.right.grey-text #{$chapter.Date}
+
+block script
+	script[src="/static/manga.js"][type="text/javascript"]

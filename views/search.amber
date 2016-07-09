@@ -1,0 +1,34 @@
+extends main
+
+block content
+	if len(Data) > 1
+		ul.tabs.light-blue-text.z-depth-1
+			each $backend, $b in Data
+				li.tab
+					a.light-blue-text.text-darken-2[href="#" + $backend] #{$backend}
+	div.section
+	each $backend, $results in Data
+		div[id=$backend]
+			each $result in $results
+				div.card
+					div.card-content
+						h5.title.light-blue-text
+							a[href="/manga/" + $backend + "/" + $result.ID] #{$result.Title}
+						div.divider
+						div.section
+						div.bottom.row
+							if $result.Image != ""
+								img.col.s2[src=$result.Image]
+
+							div.grey-text Status: #{$result.Status}
+
+							if $result.LastChapterDate != 0
+								div.grey-text Last chapter #{$result.LastChapterDate}
+							else
+								div.grey-text No chapters
+
+							div.grey-text #{$result.Views} views
+
+						div
+							each $genre in $result.Genres
+								div.chip #{$genre}

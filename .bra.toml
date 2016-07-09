@@ -4,8 +4,8 @@ init_cmds = [
 	["./build/mread"]
 ]
 watch_all = true
-watch_dirs = []
-watch_exts = [".go"]
+watch_dirs = ["views"]
+watch_exts = [".go", ".amber"]
 ignore = [".git", "node_modules"]
 ignore_files = []
 build_delay = 1000

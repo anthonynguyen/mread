@@ -7,6 +7,14 @@ import (
 	"sort"
 )
 
+type ViewData struct {
+	Failed  bool
+	Message string
+	Query   string
+	Backend string
+	Data    interface{}
+}
+
 // So that we can sort
 var query string
 
@@ -40,7 +48,12 @@ func route_search(c echo.Context) error {
 	query = c.Param("query")
 
 	if len(query) < 5 {
-		return c.String(http.StatusBadRequest, "Search query is too short")
+		data := ViewData{
+			Failed:  true,
+			Message: "Search query is too short",
+		}
+
+		return c.Render(http.StatusBadRequest, "search", data)
 	}
 
 	for _, b := range BACKENDS {
@@ -55,7 +68,13 @@ func route_search(c echo.Context) error {
 		allResults[b.Name()] = results
 	}
 
-	return c.JSON(http.StatusOK, allResults)
+	data := ViewData{
+		Failed: false,
+		Query:  query,
+		Data:   allResults,
+	}
+
+	return c.Render(http.StatusOK, "search", data)
 }
 
 func route_manga(c echo.Context) error {
@@ -66,14 +85,28 @@ func route_manga(c echo.Context) error {
 		if requestedBackend == backend.Name() {
 			result, err := backend.Manga(requestedID)
 			if err != nil {
-				return c.String(http.StatusInternalServerError, "")
+				data := ViewData{
+					Failed:  true,
+					Message: err.Error(),
+					Backend: requestedBackend,
+				}
+				return c.Render(http.StatusInternalServerError, "manga", data)
 			}
 
-			return c.JSON(http.StatusOK, result)
+			data := ViewData{
+				Failed:  false,
+				Data:    result,
+				Backend: requestedBackend,
+			}
+			return c.Render(http.StatusOK, "manga", data)
 		}
 	}
 
-	return c.String(http.StatusNotFound, "Backend not found")
+	data := ViewData{
+		Failed:  true,
+		Message: "Backend not found",
+	}
+	return c.Render(http.StatusNotFound, "manga", data)
 }
 
 func route_chapter(c echo.Context) error {
