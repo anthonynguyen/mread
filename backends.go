@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/antonholmquist/jason"
 	"github.com/parnurzeal/gorequest"
+	"html"
 	"io/ioutil"
 	"time"
 )
@@ -22,13 +23,13 @@ type SearchResult struct {
 	Image           string
 	Status          string
 	Genres          []string
-	LastChapterDate int64
+	LastChapterDate string
 	Views           int64
 }
 
 type ChapterInfo struct {
 	Number int64
-	Date   int64
+	Date   string
 	Title  string
 	ID     string
 }
@@ -38,7 +39,7 @@ type MangaResult struct {
 	Image           string
 	Status          string
 	Genres          []string
-	LastChapterDate int64
+	LastChapterDate string
 	Views           int64
 	Description     string
 	NumChapters     int64
@@ -162,7 +163,7 @@ func (m *MangaEden) Search(query string) ([]SearchResult, error) {
 
 		floatData, err := manga.GetFloat64("ld")
 		if err == nil {
-			r.LastChapterDate = int64(floatData)
+			r.LastChapterDate = relTime(floatData)
 		}
 
 		intData, err = manga.GetInt64("h")
@@ -223,7 +224,7 @@ func (m *MangaEden) Manga(id string) (MangaResult, error) {
 
 	floatData, err := manga.GetFloat64("last_chapter_date")
 	if err == nil {
-		result.LastChapterDate = int64(floatData)
+		result.LastChapterDate = relTime(floatData)
 	}
 
 	intData, err = manga.GetInt64("hits")
@@ -233,7 +234,7 @@ func (m *MangaEden) Manga(id string) (MangaResult, error) {
 
 	stringData, err = manga.GetString("description")
 	if err == nil {
-		result.Description = stringData
+		result.Description = html.UnescapeString(stringData)
 	}
 
 	intData, err = manga.GetInt64("chapters_len")
@@ -257,7 +258,7 @@ func (m *MangaEden) Manga(id string) (MangaResult, error) {
 
 			floatData, err := arr[1].Float64()
 			if err == nil {
-				chapter.Date = int64(floatData)
+				chapter.Date = getDate(floatData)
 			}
 
 			stringData, err := arr[2].String()

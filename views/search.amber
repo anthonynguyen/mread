@@ -22,7 +22,7 @@ block content
 
 							div.grey-text Status: #{$result.Status}
 
-							if $result.LastChapterDate != 0
+							if $result.LastChapterDate != ""
 								div.grey-text Last chapter #{$result.LastChapterDate}
 							else
 								div.grey-text No chapters

@@ -21,7 +21,7 @@ block content
 				if Data.Image != ""
 					img.col.s5[src=Data.Image]
 				div.grey-text Status: #{Data.Status}
-				if Data.LastChapterDate != 0
+				if Data.LastChapterDate != ""
 					div.grey-text Last chapter #{Data.LastChapterDate}
 				else
 					div.grey-text No chapters
