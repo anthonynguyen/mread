@@ -15,9 +15,9 @@ html
 				form#search[action="/search"]
 					div.input-field
 						if Query != ""
-							input#search.section[name="q"][type="search"][value=Query][required]
+							input#search.section[name="q"][type="search"][value=Query][required][autofocus][onfocus="this.value = this.value;"]
 						else
-							input#search.section[name="q"][type="search"][required]
+							input#search.section[name="q"][type="search"][required][autofocus]
 						label[for="search"]
 							i.prefix.material-icons search
 		main.section.grey.lighten-4.blue-grey-text.text-darken-1

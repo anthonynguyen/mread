@@ -41,7 +41,6 @@ main {
 input[type=search] {
 	border-bottom: 0;
 	font-size: 1.2em;
-	font-weight: 200;
 }
 .info-icon {
 	margin-right: 0.3em;

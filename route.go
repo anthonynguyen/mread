@@ -26,7 +26,10 @@ func setupRoutes(e *echo.Echo) {
 }
 
 func route_main(c echo.Context) error {
-	return c.Render(http.StatusOK, "index", nil)
+	return c.Render(http.StatusOK, "index", ViewData{
+		Failed:  true,
+		Message: "Use the bar above to search",
+	})
 }
 
 type ByLevenshteinDistance []SearchResult
@@ -48,14 +51,14 @@ func route_search(c echo.Context) error {
 	query = c.QueryParam("q")
 
 	if len(query) < 5 {
-		data := ViewData{
+		return c.Render(http.StatusBadRequest, "search", ViewData{
 			Failed:  true,
 			Message: "Search query is too short",
-		}
-
-		return c.Render(http.StatusBadRequest, "search", data)
+			Query:   query,
+		})
 	}
 
+	numResults := 0
 	for _, b := range BACKENDS {
 		results, err := b.Search(query)
 		if err != nil {
@@ -64,17 +67,23 @@ func route_search(c echo.Context) error {
 		}
 
 		sort.Sort(ByLevenshteinDistance(results))
-
 		allResults[b.Name()] = results
+		numResults += len(results)
 	}
 
-	data := ViewData{
+	if numResults < 1 {
+		return c.Render(http.StatusOK, "search", ViewData{
+			Failed:  true,
+			Query:   query,
+			Message: "No results found",
+		})
+	}
+
+	return c.Render(http.StatusOK, "search", ViewData{
 		Failed: false,
 		Query:  query,
 		Data:   allResults,
-	}
-
-	return c.Render(http.StatusOK, "search", data)
+	})
 }
 
 func route_manga(c echo.Context) error {
@@ -85,28 +94,25 @@ func route_manga(c echo.Context) error {
 		if requestedBackend == backend.Name() {
 			result, err := backend.Manga(requestedID)
 			if err != nil {
-				data := ViewData{
+				return c.Render(http.StatusInternalServerError, "manga", ViewData{
 					Failed:  true,
 					Message: err.Error(),
 					Backend: requestedBackend,
-				}
-				return c.Render(http.StatusInternalServerError, "manga", data)
+				})
 			}
 
-			data := ViewData{
+			return c.Render(http.StatusOK, "manga", ViewData{
 				Failed:  false,
 				Data:    result,
 				Backend: requestedBackend,
-			}
-			return c.Render(http.StatusOK, "manga", data)
+			})
 		}
 	}
 
-	data := ViewData{
+	return c.Render(http.StatusNotFound, "manga", ViewData{
 		Failed:  true,
 		Message: "Backend not found",
-	}
-	return c.Render(http.StatusNotFound, "manga", data)
+	})
 }
 
 func route_chapter(c echo.Context) error {
