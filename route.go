@@ -20,7 +20,7 @@ var query string
 
 func setupRoutes(e *echo.Echo) {
 	e.GET("/", route_main)
-	e.GET("/search/:query", route_search)
+	e.GET("/search", route_search)
 	e.GET("/manga/:backend/:id", route_manga)
 	e.GET("/chapter/:backend/:id", route_chapter)
 }
@@ -45,7 +45,7 @@ func (r ByLevenshteinDistance) Less(i int, j int) bool {
 
 func route_search(c echo.Context) error {
 	allResults := make(map[string][]SearchResult)
-	query = c.Param("query")
+	query = c.QueryParam("q")
 
 	if len(query) < 5 {
 		data := ViewData{
