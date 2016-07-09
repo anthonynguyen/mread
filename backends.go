@@ -7,6 +7,7 @@ import (
 	"github.com/parnurzeal/gorequest"
 	"html"
 	"io/ioutil"
+	"strconv"
 	"time"
 )
 
@@ -28,7 +29,7 @@ type SearchResult struct {
 }
 
 type ChapterInfo struct {
-	Number int64
+	Number string
 	Date   string
 	Title  string
 	ID     string
@@ -251,17 +252,17 @@ func (m *MangaEden) Manga(id string) (MangaResult, error) {
 				continue
 			}
 
-			intData, err := arr[0].Int64()
+			floatData, err := arr[0].Float64()
 			if err == nil {
-				chapter.Number = intData
+				chapter.Number = strconv.FormatFloat(floatData, 'f', -1, 64)
 			}
 
-			floatData, err := arr[1].Float64()
+			floatData, err = arr[1].Float64()
 			if err == nil {
 				chapter.Date = getDate(floatData)
 			}
 
-			stringData, err := arr[2].String()
+			stringData, err = arr[2].String()
 			if err == nil {
 				chapter.Title = stringData
 			}
