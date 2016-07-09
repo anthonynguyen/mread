@@ -13,6 +13,7 @@ type Backend interface {
 	Name() string
 	Search(string) ([]SearchResult, error)
 	Manga(string) (MangaResult, error)
+	Chapter(string) ([]string, error)
 }
 
 type SearchResult struct {
@@ -27,21 +28,21 @@ type SearchResult struct {
 
 type ChapterInfo struct {
 	Number int64
-	Date int64
-	Title string
-	ID string
+	Date   int64
+	Title  string
+	ID     string
 }
 
 type MangaResult struct {
-	Title string
-	Image string
-	Status string
-	Genres []string
+	Title           string
+	Image           string
+	Status          string
+	Genres          []string
 	LastChapterDate int64
-	Views int64
-	Description string
-	NumChapters int64
-	Chapters []ChapterInfo
+	Views           int64
+	Description     string
+	NumChapters     int64
+	Chapters        []ChapterInfo
 }
 
 type MangaEden struct {
@@ -50,15 +51,17 @@ type MangaEden struct {
 }
 
 var MANGA_EDEN = struct {
-	MAX_AGE   int64
-	LIST_URL  string
-	IMAGE_URL string
-	INFO_URL string
+	MAX_AGE     int64
+	LIST_URL    string
+	IMAGE_URL   string
+	INFO_URL    string
+	CHAPTER_URL string
 }{
 	3600, // 1 hour, in seconds
 	"https://www.mangaeden.com/api/list/0/",
 	"https://cdn.mangaeden.com/mangasimg/%s",
 	"https://www.mangaeden.com/api/manga/%s/",
+	"https://www.mangaeden.com/api/chapter/%s/",
 }
 
 func (m *MangaEden) Name() string {
@@ -182,9 +185,13 @@ func (m *MangaEden) Manga(id string) (MangaResult, error) {
 	var result MangaResult
 	url := fmt.Sprintf(MANGA_EDEN.INFO_URL, id)
 
-	_, body, errs := gorequest.New().Get(url).End()
+	resp, body, errs := gorequest.New().Get(url).End()
 	if errs != nil {
 		return result, errs[0]
+	}
+
+	if resp.StatusCode != 200 {
+		return result, errors.New("Status: " + resp.Status)
 	}
 
 	data := []byte(body)
@@ -236,8 +243,7 @@ func (m *MangaEden) Manga(id string) (MangaResult, error) {
 
 	valueArrayData, err := manga.GetValueArray("chapters")
 	if err == nil {
-		log.Warn(len(valueArrayData))
-		for _, chapterJSON := range(valueArrayData) {
+		for _, chapterJSON := range valueArrayData {
 			var chapter ChapterInfo
 			arr, err := chapterJSON.Array()
 			if err != nil || len(arr) != 4 {
@@ -271,4 +277,47 @@ func (m *MangaEden) Manga(id string) (MangaResult, error) {
 	}
 
 	return result, nil
+}
+
+// Returns a list of image urls
+func (m *MangaEden) Chapter(id string) ([]string, error) {
+	result := make([]string, 0)
+
+	url := fmt.Sprintf(MANGA_EDEN.CHAPTER_URL, id)
+	resp, body, errs := gorequest.New().Get(url).End()
+	if errs != nil {
+		return result, errs[0]
+	}
+
+	if resp.StatusCode != 200 {
+		return result, errors.New("Status: " + resp.Status)
+	}
+
+	data := []byte(body)
+
+	chapter, err := jason.NewObjectFromBytes(data)
+	if err != nil {
+		return result, err
+	}
+
+	pages, err := chapter.GetValueArray("images")
+	if err == nil {
+		// Assume (pray) that the list is in reverse order and just go through it backwards
+		for i := len(pages) - 1; i >= 0; i-- {
+			arr, err := pages[i].Array()
+			if err != nil || len(arr) != 4 {
+				// we dead
+				continue
+			}
+
+			stringData, err := arr[1].String()
+			if err == nil {
+				result = append(result, fmt.Sprintf(MANGA_EDEN.IMAGE_URL, stringData))
+			}
+		}
+
+		return result, nil
+	}
+
+	return result, err
 }
