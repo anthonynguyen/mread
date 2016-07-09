@@ -18,7 +18,7 @@ func setupRoutes(e *echo.Echo) {
 }
 
 func route_main(c echo.Context) error {
-	return c.String(http.StatusOK, "You've reached /")
+	return c.Render(http.StatusOK, "index", nil)
 }
 
 type ByLevenshteinDistance []SearchResult
