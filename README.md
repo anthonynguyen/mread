@@ -4,16 +4,14 @@ Web-based manga reader for various sources.
 
 ### How to run
 
-Clone this repository and run the following commands:
+Run the following commands:
 
 ```
-npm install
+go get github.com/anthonynguyen/mread
 ```
 
-and
-
 ```
-node index.js
+mread
 ```
 
 `mread` should now be running at `http://localhost:5678`
