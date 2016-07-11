@@ -15,6 +15,7 @@ main {
 #gallery {
 	background: rgba(0, 0, 0, 0.6);
 	display: none;
+	flex-direction: column;
 	height: 100%;
 	left: 0;
 	position: fixed;
@@ -24,7 +25,7 @@ main {
 	z-index: 9999;
 }
 #images {
-	height: 100%;
+	flex: 1;
 	width: 100%;
 }
 #gallery #images div {

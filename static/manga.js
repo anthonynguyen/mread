@@ -62,7 +62,7 @@ function setSlide() {
 
 	$(kids[current]).addClass('current');
 
-	$('#gallery').show();
+	$('#gallery').css('display', 'flex');
 	$('#page-number').text((current + 1) + '/' + slides);
 }
 
