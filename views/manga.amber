@@ -32,12 +32,13 @@ block content
 				each $genre in Data.Genres
 					div.chip #{$genre}
 	if len(Data.Chapters) > 0
-		div.collection.z-depth-1
+		div.collection.z-depth-1.chapter-list
 			each $chapter in Data.Chapters
-				a.collection-item.light-blue-text.chapter-link[href="/chapter/" + $backend + "/" + $chapter.ID]
+				a.collection-item.light-blue-text.chapter-link[href="/chapter/" + $backend + "/" + $chapter.ID][data-backend=$backend][data-chapter-id=$chapter.ID]
 					span.grey-text #{$chapter.Number + " - "}
 					span #{$chapter.Title}
-					span.right.grey-text #{$chapter.Date}
+					span.right.grey-text.chapter-date #{$chapter.Date}
+					span.right.badge.light-blue.darken-3.is-unread
 
 block script
 	script[src="/static/manga.js"][type="text/javascript"]

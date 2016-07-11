@@ -49,3 +49,6 @@ input[type=search] {
 .space {
 	margin: 0 1em;
 }
+span.badge {
+	position: relative;
+}

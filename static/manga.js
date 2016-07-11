@@ -1,42 +1,44 @@
 var slides = 0;
 var current = 0;
-
 var rightToLeft = true;
 
 $(document).ready(function () {
-	var rtl = localStorage.getItem('rightToLeft');
-	if (rtl != null) {
-		if (rtl == 'false') {
-			rightToLeft = false;
-		} else {
-			rightToLeft = true;
-		}
-	} else {
-		localStorage.setItem('rightToLeft', rightToLeft);
-	}
+	var rtl = Lockr.get('rtl', true);
+
+	if (rtl) rightToLeft = true;
+	else rightToLeft = false;
 
 	$('#rtl').prop('checked', rightToLeft);
+
+	// Add unread badges to everything
+	$('.chapter-link').each(function () {
+		var backendName = $(this).attr('data-backend');
+		var chapterID = $(this).attr('data-chapter-id');
+		console.log(backendName + ', ' + chapterID);
+		if (!Lockr.sismember(backendName + 'ReadChapters', chapterID)) {
+			$(this).find('.is-unread').addClass('new');
+		} else {
+			$(this).find('.is-unread').removeClass('new');
+		}
+	});
 });
 
 $('#rtl').change(function (e) {
 	rightToLeft = $(this).prop('checked');
-	localStorage.setItem('rightToLeft', rightToLeft);
+	Lockr.set('rtl', rightToLeft);
 });
 
 $(document).keydown(function(e) {
 	switch(e.which) {
-		case 27:
+		case 27: 
 			resetSlides();
 			break;
-
-		case 37:
+		case 37: 
 			left();
 			break;
-
-		case 39:
+		case 39: 
 			right();
 			break;
-
 		default: return;
 	}
 	e.preventDefault();
@@ -44,18 +46,14 @@ $(document).keydown(function(e) {
 
 function resetSlides() {
 	$('#gallery').hide();
-	slides = [];
+	slides = 0;
 	current = 0;
 }
 
 function setSlide() {
-	if (slides < 1) {
-		return;
-	}
+	if (slides < 1) return;
 
-	if (current < 0 || current >= slides) {
-		return;
-	}
+	if (current < 0 || current >= slides) return;
 
 	var kids = $('#images').children();
 	kids.removeClass('current');
@@ -68,36 +66,24 @@ function setSlide() {
 
 function nextSlide() {
 	current++;
-	if (current >= slides) {
-		current = slides - 1;
-	}
-
+	if (current >= slides) current = slides - 1;
 	setSlide();
 }
 
 function previousSlide() {
 	current--;
-	if (current < 0) {
-		current = 0;
-	}
-
+	if (current < 0) current = 0;
 	setSlide();
 }
 
 function left() {
-	if (rightToLeft) {
-		nextSlide();
-	} else {
-		previousSlide();
-	}
+	if (rightToLeft) nextSlide();
+	else previousSlide();
 }
 
 function right() {
-	if (rightToLeft) {
-		previousSlide();
-	} else {
-		nextSlide();
-	}
+	if (rightToLeft) previousSlide();
+	else nextSlide();
 }
 
 $('.chapter-link').click(function (e) {
@@ -112,6 +98,9 @@ $('.chapter-link').click(function (e) {
 		current = 1;
 		previousSlide();
 	});
+
+	Lockr.sadd($(this).attr('data-backend') + 'ReadChapters', $(this).attr('data-chapter-id'));
+	$(this).find('.is-unread').removeClass('new');
 });
 
 $('#gallery').click(function (e) {
