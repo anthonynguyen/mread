@@ -115,11 +115,7 @@ $('.chapter-link').click(function (e) {
 });
 
 $('#gallery').click(function (e) {
-	if (e.pageX < window.innerWidth / 2) {
-		left();
-	} else {
-		right();
-	}
+	nextSlide();
 });
 
 $('#gallery nav').click(function (e) {
