@@ -97,10 +97,10 @@ $('.chapter-link').click(function (e) {
 		});
 		current = 1;
 		previousSlide();
-	});
 
-	Lockr.sadd($(this).attr('data-backend') + 'ReadChapters', $(this).attr('data-chapter-id'));
-	$(this).find('.is-unread').removeClass('new');
+		Lockr.sadd($(this).attr('data-backend') + 'ReadChapters', $(this).attr('data-chapter-id'));
+		$(this).find('.is-unread').removeClass('new');
+	});
 });
 
 $('#gallery').click(function (e) {
