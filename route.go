@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/anthonynguyen/go-manga"
 	"github.com/labstack/echo"
 	"github.com/texttheater/golang-levenshtein/levenshtein"
 	"net/http"
@@ -32,7 +33,7 @@ func route_main(c echo.Context) error {
 	})
 }
 
-type ByLevenshteinDistance []SearchResult
+type ByLevenshteinDistance []manga.SearchResult
 
 func (r ByLevenshteinDistance) Len() int {
 	return len(r)
@@ -47,7 +48,7 @@ func (r ByLevenshteinDistance) Less(i int, j int) bool {
 }
 
 func route_search(c echo.Context) error {
-	allResults := make(map[string][]SearchResult)
+	allResults := make(map[string][]manga.SearchResult)
 	query = c.QueryParam("q")
 
 	if len(query) < 5 {

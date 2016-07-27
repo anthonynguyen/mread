@@ -2,6 +2,7 @@ package main
 
 import (
 	"errors"
+	"github.com/anthonynguyen/go-manga"
 	"github.com/eknkc/amber"
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/engine/standard"
@@ -11,8 +12,8 @@ import (
 	"os"
 )
 
-var BACKENDS []Backend = []Backend{
-	new(MangaEden),
+var BACKENDS []manga.Backend = []manga.Backend{
+	new(manga.MangaEden),
 }
 
 type Views struct {
