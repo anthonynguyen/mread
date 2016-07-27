@@ -2,7 +2,6 @@ package main
 
 import (
 	"errors"
-	"github.com/anthonynguyen/go-manga"
 	"github.com/eknkc/amber"
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/engine/standard"
@@ -11,10 +10,6 @@ import (
 	"io"
 	"os"
 )
-
-var BACKENDS []manga.Backend = []manga.Backend{
-	new(manga.MangaEden),
-}
 
 type Views struct {
 	templates map[string]*template.Template

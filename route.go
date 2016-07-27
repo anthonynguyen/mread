@@ -3,9 +3,7 @@ package main
 import (
 	"github.com/anthonynguyen/go-manga"
 	"github.com/labstack/echo"
-	"github.com/texttheater/golang-levenshtein/levenshtein"
 	"net/http"
-	"sort"
 )
 
 type ViewData struct {
@@ -15,9 +13,6 @@ type ViewData struct {
 	Backend string
 	Data    interface{}
 }
-
-// So that we can sort
-var query string
 
 func setupRoutes(e *echo.Echo) {
 	e.GET("/", route_main)
@@ -33,57 +28,22 @@ func route_main(c echo.Context) error {
 	})
 }
 
-type ByLevenshteinDistance []manga.SearchResult
-
-func (r ByLevenshteinDistance) Len() int {
-	return len(r)
-}
-
-func (r ByLevenshteinDistance) Swap(i int, j int) {
-	r[i], r[j] = r[j], r[i]
-}
-
-func (r ByLevenshteinDistance) Less(i int, j int) bool {
-	return levenshtein.DistanceForStrings([]rune(query), []rune(r[i].Title), levenshtein.DefaultOptions) < levenshtein.DistanceForStrings([]rune(query), []rune(r[j].Title), levenshtein.DefaultOptions)
-}
-
 func route_search(c echo.Context) error {
-	allResults := make(map[string][]manga.SearchResult)
-	query = c.QueryParam("q")
+	query := c.QueryParam("q")
+	all, err := manga.Search(query)
 
-	if len(query) < 5 {
+	if err != nil {
 		return c.Render(http.StatusBadRequest, "search", ViewData{
 			Failed:  true,
-			Message: "Search query is too short",
+			Message: err.Error(),
 			Query:   query,
-		})
-	}
-
-	numResults := 0
-	for _, b := range BACKENDS {
-		results, err := b.Search(query)
-		if err != nil {
-			log.Error(err)
-			continue
-		}
-
-		sort.Sort(ByLevenshteinDistance(results))
-		allResults[b.Name()] = results
-		numResults += len(results)
-	}
-
-	if numResults < 1 {
-		return c.Render(http.StatusOK, "search", ViewData{
-			Failed:  true,
-			Query:   query,
-			Message: "No results found",
 		})
 	}
 
 	return c.Render(http.StatusOK, "search", ViewData{
 		Failed: false,
 		Query:  query,
-		Data:   allResults,
+		Data:   all,
 	})
 }
 
@@ -91,28 +51,19 @@ func route_manga(c echo.Context) error {
 	requestedBackend := c.Param("backend")
 	requestedID := c.Param("id")
 
-	for _, backend := range BACKENDS {
-		if requestedBackend == backend.Name() {
-			result, err := backend.Manga(requestedID)
-			if err != nil {
-				return c.Render(http.StatusInternalServerError, "manga", ViewData{
-					Failed:  true,
-					Message: err.Error(),
-					Backend: requestedBackend,
-				})
-			}
-
-			return c.Render(http.StatusOK, "manga", ViewData{
-				Failed:  false,
-				Data:    result,
-				Backend: requestedBackend,
-			})
-		}
+	result, err := manga.Manga(requestedBackend, requestedID)
+	if err != nil {
+		return c.Render(http.StatusInternalServerError, "manga", ViewData{
+			Failed:  true,
+			Message: err.Error(),
+			Backend: requestedBackend,
+		})
 	}
 
-	return c.Render(http.StatusNotFound, "manga", ViewData{
-		Failed:  true,
-		Message: "Backend not found",
+	return c.Render(http.StatusOK, "manga", ViewData{
+		Failed:  false,
+		Data:    result,
+		Backend: requestedBackend,
 	})
 }
 
@@ -120,16 +71,10 @@ func route_chapter(c echo.Context) error {
 	requestedBackend := c.Param("backend")
 	requestedID := c.Param("id")
 
-	for _, backend := range BACKENDS {
-		if requestedBackend == backend.Name() {
-			result, err := backend.Chapter(requestedID)
-			if err != nil {
-				return c.String(http.StatusInternalServerError, "")
-			}
-
-			return c.JSON(http.StatusOK, result)
-		}
+	result, err := manga.Chapter(requestedBackend, requestedID)
+	if err != nil {
+		return c.String(http.StatusInternalServerError, "")
 	}
 
-	return c.String(http.StatusNotFound, "Backend not found")
+	return c.JSON(http.StatusOK, result)
 }
